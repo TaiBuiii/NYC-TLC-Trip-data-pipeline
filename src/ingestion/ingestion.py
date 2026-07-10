@@ -31,6 +31,9 @@ def load_data(s3_client, bucket, url, s3_key):
     """
     with requests.get(url, stream=True, timeout=30) as r:
         if r.status_code == 200:
+
+            r.raw.decode_content = True
+
             s3_client.upload_fileobj(
                 Bucket=bucket,  
                 Key=s3_key,
@@ -62,7 +65,6 @@ def ingest_data(years):
 
     zone_url = "https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv"
     zone_key = "misc/taxi_zone_lookup.csv"
-
     try:
         process_and_load(s3_client, url=zone_url, s3_key=zone_key)
     except Exception as e:
