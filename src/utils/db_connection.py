@@ -2,6 +2,7 @@ import os
 import boto3
 from dotenv import load_dotenv  
 import sqlalchemy
+from pyspark.sql import SparkSession
 
 load_dotenv() 
 
@@ -32,3 +33,32 @@ def get_postgres_conn():
         return engine
     except Exception as e:
         raise ConnectionError(f"Cannot connect to Postgres: {e}") from e
+
+
+def get_spark_session():
+    return (
+        SparkSession.builder
+        .master("local[*]")
+        .appName("NYC Taxi ETL")
+        .config(
+            "spark.jars.packages",
+            "org.apache.hadoop:hadoop-aws:3.3.4,"
+            "com.amazonaws:aws-java-sdk-bundle:1.12.262"
+        )
+        .config(
+            "spark.hadoop.fs.s3a.endpoint",
+            f"http://minio:{os.getenv('MINIO_API_PORT')}"
+        )
+        .config(
+            "spark.hadoop.fs.s3a.access.key",
+            os.getenv("MINIO_ROOT_USER")
+        )
+        .config(
+            "spark.hadoop.fs.s3a.secret.key",
+            os.getenv("MINIO_ROOT_PASSWORD")
+        )
+        .config("spark.hadoop.fs.s3a.path.style.access", "true")
+        .config("spark.hadoop.fs.s3a.connection.ssl.enabled", "false")
+        .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+        .getOrCreate()
+    )
