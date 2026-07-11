@@ -1,13 +1,33 @@
-from airflow.sdk import task, dag
-from src.ingestion.ingestion import ingest_data
+from airflow.sdk import dag, task
+from src.utils.db_connection import get_minio_client, get_spark_session
+from src.bronze.ingestion import ingest_taxi, ingest_zone
+from src.silver.transform_taxi import transform_taxi
+from src.silver.transform_zone import transform_zone
 
-@dag()
+
+@dag(
+    schedule=None,
+    catchup=False
+)
 def etl_dag():
 
-    @task.python
-    def ingestion():
-        ingest_data([2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026])
+    @task
+    def bronze():
+        s3_client = get_minio_client()
+        ingest_taxi(s3_client, list(range(2009, 2027)))
+        ingest_zone(s3_client)
 
-    ingestion()
+    @task
+    def silver():
+        spark = get_spark_session()
 
-etl_dag = etl_dag()
+        transform_taxi(spark, list(range(2009, 2027)))
+        transform_zone(spark)
+
+        spark.stop()
+
+    bronze() >> silver()
+
+
+
+etl_dag()

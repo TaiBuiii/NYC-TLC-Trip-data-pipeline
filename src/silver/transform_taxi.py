@@ -40,21 +40,22 @@ def feature_engineering(df_raw):
         .withColumn("average_speed" ,F.round(F.col("trip_distance") / (F.col("trip_duration")/60),2))
     return df
                 
-def transform_taxi():
-    spark = get_spark_session()
-    years  = [2022]
-    months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+def transform_taxi(spark, years):
     for year in years:
-        for month in months:
-            bronze_path = f"s3a://bronze/{year}/{month}/"
-            silver_path = f"s3a://silver/{year}/{month}/"
+        for month in range(1, 13):
+            try:
+                bronze_path = f"s3a://bronze/{year}/{month:02d}/yellow_tripdata_{year}-{month:02d}.parquet"
+                silver_path = f"s3a://silver/{year}/{month:02d}"
 
-            df_raw = spark.read.parquet(bronze_path)
-            df = casting(df_raw)
-            df = cleansing(df)
-            df = feature_engineering(df)
+                df_raw = spark.read.parquet(bronze_path)
+                df = casting(df_raw)
+                df = cleansing(df)
+                df = feature_engineering(df)
 
-            df.write.mode("overwrite").parquet(silver_path)
-            logger.info(f"Transformed {year}-{month} -> {silver_path}")
-            
-    spark.stop()
+                df.write.mode("ignore").parquet(silver_path)
+                logger.info(f"Transformed {year}-{month} -> {silver_path}")
+            except Exception as e:
+                logger.warning(f"Error occured transforming {year}-{month} -> {silver_path}: {e}")
+                continue
+
+    logger.info("Transform Taxi successfully")
