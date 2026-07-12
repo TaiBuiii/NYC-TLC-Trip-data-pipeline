@@ -1,5 +1,4 @@
 from pyspark.sql import functions as F
-from src.utils.db_connection import get_spark_session
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -33,13 +32,21 @@ def cleansing(df_raw):
 
 def feature_engineering(df_raw):
     df = df_raw \
-        .withColumn("pickup_hour", F.hour(F.col("pickup_datetime"))) \
-        .withColumn("pickup_day_of_week", F.dayofweek(F.col("pickup_datetime"))) \
         .withColumn("trip_distance", F.round(F.col("trip_distance") * 1.60934,2)) \
         .withColumn("trip_duration",  F.round((F.unix_timestamp("dropoff_datetime") - F.unix_timestamp("pickup_datetime")) / 60,2)) \
         .withColumn("average_speed" ,F.round(F.col("trip_distance") / (F.col("trip_duration")/60),2))
     return df
-                
+
+def filter_null(df_raw):
+    df = df_raw.filter(
+        (F.col("pickup_datetime").isNotNull()) &
+        (F.col("dropoff_datetime").isNotNull()) &
+        (F.col("pickup_location_id").isNotNull()) &
+        (F.col("dropoff_location_id").isNotNull()) &
+        (F.col("payment_type").isNotNull())
+    )
+    return df
+
 def transform_taxi(spark, years):
     for year in years:
         for month in range(1, 13):
@@ -51,6 +58,7 @@ def transform_taxi(spark, years):
                 df = casting(df_raw)
                 df = cleansing(df)
                 df = feature_engineering(df)
+                df = filter_null(df)
 
                 df.write.mode("ignore").parquet(silver_path)
                 logger.info(f"Transformed {year}-{month} -> {silver_path}")
