@@ -12,4 +12,5 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 
 USER airflow
 
-RUN pip install --no-cache-dir pyspark==3.5.1
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
