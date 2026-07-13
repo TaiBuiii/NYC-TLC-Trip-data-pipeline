@@ -1,15 +1,15 @@
 # NYC-TLC-Trip-data-pipeline
 
-# Objectives 
+# I. Objectives 
 The project aims to build a compact data pipeline for the NYC Yellow Taxi dataset, facilitating business decision making process. The ultimate goal of this project is answering 3 questions:
 - What is the peak hour, where the demand for taking taxi is highest?
 - Which location in New York city help gain the most revenue?
 - How the average speed of each trip change over the time in a day?
 These business insights are visualized through an interactive Power BI dashboard.
-## Architecture 
+## 1. Architecture 
 ![Architecture](architecture.png)
 
-## Tech Stack
+## 2. Tech Stack
 | Category               | Technology              | Purpose                                                                                                                                |
 | ---------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | Programming Language   | Python                  | Main language for implementing ingestion, orchestration scripts.                                                     |
@@ -21,7 +21,7 @@ These business insights are visualized through an interactive Power BI dashboard
 | Visualization          | Power BI                | Connects to PostgreSQL to build interactive dashboards and answer business questions.                                                  |
 | Containerization       | Docker & Docker Compose | Provides a reproducible environment for Airflow, Spark, PostgreSQL, and MinIO, simplifying deployment and development.                 |
 
-# Star Schema
+# II. Star Schema
 
 ## 1. Fact Table: `fact_trips`
 
@@ -68,7 +68,7 @@ This table contains the lookup information for payment methods used by passenger
 | `payment_id` | INT | PK | Unique identifier for each payment method. |
 | `payment_name` | VARCHAR | | The descriptive name of the payment method (e.g., Credit Card, Cash, No Charge, Dispute). |
 
-# Project Structure
+# III. Project Structure
 ```
 NYC-TLC-TRIP-DATA/
 ├── .venv/
@@ -108,7 +108,7 @@ NYC-TLC-TRIP-DATA/
 └── requirements.txt
 ```
 
-# Set up
+# IV. Set up
 Follow these steps to set up the environment and run the data pipeline.
 
 ## Prerequisites
