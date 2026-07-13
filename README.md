@@ -111,17 +111,17 @@ NYC-TLC-TRIP-DATA/
 # Set up
 Follow these steps to set up the environment and run the data pipeline.
 
-# Prerequisites
+## Prerequisites
 Make sure you have **Docker** and **Docker Compose** installed on your system.
 
-# Step 1: Build Images
+## Step 1: Build Images
 Run the following command in your terminal to build the custom Docker image and start all infrastructure services (Airflow, Postgres, Redis, MinIO):
 
 ```bash
 docker compose up --build
 ```
 
-# Step 2: Access Web UIs
+## Step 2: Access Web UIs
 Once all services are up and running, you can access the following web interfaces:
 - Apache Airflow UI: http://localhost:8080
 
@@ -133,7 +133,7 @@ Credentials: Username: airflow / Password: airflow
 ```bash
 Credentials: Username: minioadmin / Password: minioadmin
 ```
-# Step 3: Configure Airflow Connection
+## Step 3: Configure Airflow Connection
 To allow Airflow to communicate with your PostgreSQL database, you need to set up a connection manually in the Airflow UI:
 
 - Go to Admin > Connections in the top menu.
@@ -158,7 +158,7 @@ Password: airflow
 Click Save.
 ```
 
-# Step 4: Execute the DAGs Sequence
+## Step 4: Execute the DAGs Sequence
 Run the DAGs manually in the Airflow UI in the following specific order:
 
 `Trigger init_storage`: This will initialize your storage layer and create the required MinIO buckets.
