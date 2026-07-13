@@ -3,8 +3,24 @@ import boto3
 from dotenv import load_dotenv  
 import sqlalchemy
 from pyspark.sql import SparkSession
-
 load_dotenv() 
+
+
+def get_jdbc_url():
+    return (
+        f"jdbc:postgresql://{os.getenv('POSTGRES_HOST', 'postgres')}"
+        f":{os.getenv('POSTGRES_PORT', '5432')}/{os.getenv('POSTGRES_DB')}"
+    )
+
+def write_postgres_table(df, table_name, mode="append"):
+    df.write.format("jdbc") \
+        .option("url", get_jdbc_url()) \
+        .option("dbtable", table_name) \
+        .option("user", os.getenv("POSTGRES_USER")) \
+        .option("password", os.getenv("POSTGRES_PASSWORD")) \
+        .option("driver", "org.postgresql.Driver") \
+        .mode(mode) \
+        .save()
 
 
 def get_minio_client():
@@ -23,7 +39,7 @@ def get_minio_client():
         raise ConnectionError(f"Cannot connecto MinIO: {e}") from e
 
 
-def get_postgres_conn():
+def get_postgres_engine():
     """
     Initialize Postgres connection 
     """
@@ -43,7 +59,8 @@ def get_spark_session():
         .config(
             "spark.jars.packages",
             "org.apache.hadoop:hadoop-aws:3.3.4,"
-            "com.amazonaws:aws-java-sdk-bundle:1.12.262"
+            "com.amazonaws:aws-java-sdk-bundle:1.12.262,"
+            "org.postgresql:postgresql:42.7.3"
         )
         .config(
             "spark.hadoop.fs.s3a.endpoint",

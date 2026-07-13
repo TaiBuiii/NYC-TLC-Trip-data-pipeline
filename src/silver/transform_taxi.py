@@ -11,7 +11,7 @@ def casting(df_raw):
         F.col("PULocationID").cast("int").alias("pickup_location_id"),
         F.col("DOLocationID").cast("int").alias("dropoff_location_id"),
         F.col("passenger_count").cast("int"),
-        F.col("payment_type").cast("int"),
+        F.col("payment_type").cast("int").alias("payment_id"),
         F.col("fare_amount").cast("double"),
         F.col("tip_amount").cast("double"),
         F.col("extra").cast("double"),
@@ -43,7 +43,7 @@ def filter_null(df_raw):
         (F.col("dropoff_datetime").isNotNull()) &
         (F.col("pickup_location_id").isNotNull()) &
         (F.col("dropoff_location_id").isNotNull()) &
-        (F.col("payment_type").isNotNull())
+        (F.col("payment_id").isNotNull())
     )
     return df
 

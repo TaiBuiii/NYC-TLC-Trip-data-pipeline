@@ -8,7 +8,6 @@ logger = get_logger(__name__)
 
 SQL_FILES = [
     "gold_schema.sql",
-    "dim_datetime.sql",
     "dim_location.sql",
     "dim_payment.sql",
     "fact_trip.sql",
