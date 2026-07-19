@@ -1,4 +1,4 @@
-pyspark==3.5.1
+pyspark==3.5.3
 boto3
 sqlalchemy
 psycopg2-binary

@@ -12,6 +12,5 @@ CREATE TABLE IF NOT EXISTS star_schema.fact_trip(
     extra DOUBLE PRECISION DEFAULT 0,
     total_amount DOUBLE PRECISION,
     trip_duration DOUBLE PRECISION,
-    average_speed DOUBLE PRECISION,
-    UNIQUE (pickup_datetime, dropoff_datetime, pickup_location_id, dropoff_location_id, payment_id, trip_distance, passenger_count, fare_amount, tip_amount, extra, total_amount, trip_duration, average_speed)
+    average_speed DOUBLE PRECISION
 );

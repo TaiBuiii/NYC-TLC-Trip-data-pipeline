@@ -4,7 +4,8 @@
 The project aims to build a compact data pipeline for the NYC Yellow Taxi dataset, facilitating business decision making process. The ultimate goal of this project is answering 3 questions:
 - What is the peak hour, where the demand for taking taxi is highest?
 - Which location in New York city help gain the most revenue?
-- How the average speed of each trip change over the time in a day?
+- How the average speed of each trip change over the time in a day? <br>
+
 These business insights are visualized through an interactive Power BI dashboard.
 ## 1. Architecture 
 ![Architecture](architecture.png)
@@ -22,6 +23,7 @@ These business insights are visualized through an interactive Power BI dashboard
 | Containerization       | Docker & Docker Compose | Provides a reproducible environment for Airflow, Spark, PostgreSQL, and MinIO, simplifying deployment and development.                 |
 
 # II. Star Schema
+![Architecture](star_schema.png)
 
 ## 1. Fact Table: `fact_trips`
 
@@ -101,6 +103,8 @@ NYC-TLC-TRIP-DATA/
 ├── .env.example
 ├── .gitignore
 ├── architecture.png
+├── star_schema.png
+├── dashboard.pbix 
 ├── docker-compose.yaml
 ├── Dockerfile
 ├── LICENSE
@@ -151,6 +155,8 @@ Host: postgres
 
 Database: airflow
 
+port: 5432
+
 Login: airflow
 
 Password: airflow
@@ -166,3 +172,22 @@ Run the DAGs manually in the Airflow UI in the following specific order:
 `Trigger init_star_schema`: This will execute the SQL scripts to create the dimension and fact tables in Postgres.
 
 `Trigger etl_dag`: This will trigger the main ETL pipeline to ingest, transform, and load the NYC taxi trip data into the star schema.
+
+Or you can just simply trigger 1 dags `master_pipeline`
+
+## Step 5: Visualize data
+
+Connect to PowerBI via the following configurations:
+
+```bash
+Host: localhost:5432
+
+Database: airflow
+
+Login: airflow
+
+Password: airflow
+
+Click Save.
+```
+In the Navigator window, select the following tables: `dim_location`, `dim_payment`, and `fact_trip`. Click Load or Transform Data to prepare the dataset. Open your project’s `dashboard.pbix` file.

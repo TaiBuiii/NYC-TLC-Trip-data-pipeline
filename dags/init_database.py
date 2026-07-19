@@ -3,7 +3,7 @@ from pathlib import Path
 from airflow.sdk import dag, task
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from src.utils.logger import get_logger
-
+from datetime import timedelta
 logger = get_logger(__name__)
 
 SQL_FILES = [
@@ -15,12 +15,17 @@ SQL_FILES = [
 @dag(
     schedule=None,
     catchup=False,
-    tags=["init", "postgres", "gold"],
 )
 def init_star_schema():
-
-    @task
+    """
+    Airflow DAG to initialize the Gold layer star schema in PostgreSQL.
+    Reads SQL files from the local directory and executes them sequentially.
+    """
+    @task(retries=3, retry_delay=timedelta(minutes=5))
     def create_schema():
+        """
+        Establishes a connection to PostgreSQL via airflow UI and executes setup scripts.
+        """
         hook = PostgresHook(postgres_conn_id="star_schema")
         engine = hook.get_sqlalchemy_engine()
 
